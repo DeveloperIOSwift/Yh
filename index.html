@@ -223,6 +223,36 @@
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+  }
+
+  .service-card.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.2);
+  }
+
+  .service-check {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: all 0.3s;
+    background: transparent;
+  }
+
+  .service-card.selected .service-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
   }
 
   .service-card::before {
@@ -380,6 +410,112 @@
 
   footer span { color: var(--gold); }
 
+  /* FLOATING SEND BUTTON */
+  .float-send {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    z-index: 500;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: var(--black);
+    font-family: 'Heebo', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 40px rgba(201,168,76,0.45);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    white-space: nowrap;
+  }
+
+  .float-send.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .float-send:hover {
+    box-shadow: 0 12px 50px rgba(201,168,76,0.6);
+    transform: translateX(-50%) translateY(-3px);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 16px;
+    padding: 36px 28px;
+    max-width: 340px;
+    width: 90%;
+    text-align: center;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .modal-icon { font-size: 3rem; margin-bottom: 14px; }
+
+  .modal h3 {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .modal p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .modal-btn-yes {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: var(--black);
+    font-family: 'Heebo', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .modal-btn-yes:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.3); }
+
+  .modal-btn-no {
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    border: 1px solid rgba(201,168,76,0.25);
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .modal-btn-no:hover { border-color: var(--gold); color: var(--text); }
+
   /* ANIMATIONS */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -400,13 +536,20 @@
     .hero { padding: 90px 20px 50px; }
     .gallery-placeholder { grid-template-columns: repeat(2,1fr); }
     .contact-card { font-size: 0.95rem; }
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .service-card {
+      padding: 18px 14px;
+    }
+    .service-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .service-card h3 { font-size: 1rem; }
+    .service-card p { font-size: 0.8rem; }
   }
 </style>
 </head>
 <body>
-
-<!-- BSD -->
-
 
 <!-- NAV -->
 <nav>
@@ -438,62 +581,74 @@
     <p>מגוון רחב של שירותים מקצועיים לבית ולמשרד</p>
   </div>
   <div class="services-grid">
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תליית טלוויזיות', '📺')">
+      <div class="service-check">✓</div>
       <div class="service-icon">📺</div>
       <h3>תליית טלוויזיות</h3>
       <p>התקנה מקצועית של טלוויזיות לכל גודל ודגם</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תליית מראות', '🪞')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🪞</div>
       <h3>תליית מראות</h3>
       <p>תליה בטוחה ומדויקת של מראות בכל גודל</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תליית וילונות', '🪟')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🪟</div>
       <h3>תליית וילונות</h3>
       <p>התקנת מוטות ווילונות לכל סוגי החלונות</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תליית תמונות', '🖼️')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🖼️</div>
       <h3>תליית תמונות</h3>
       <p>תליה מדויקת ויצירתית של תמונות ויצירות אמנות</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תליית מדפים', '🖨️')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🖨️</div>
       <h3>תליית מדפים</h3>
       <p>התקנת מדפים יציבים לכל הצרכים</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תליית מנורות', '💡')">
+      <div class="service-check">✓</div>
       <div class="service-icon">💡</div>
       <h3>תליית מנורות</h3>
       <p>התקנת גופי תאורה שונים בבית ובמשרד</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תיקונים וצבע', '🎨')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🎨</div>
       <h3>תיקונים וצבע</h3>
       <p>מילוי חורים, תיקוני גבס וצביעה מקצועית</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'רובה וטיפוח קירות', '🪣')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🪣</div>
       <h3>רובה וטיפוח קירות</h3>
       <p>רובה מקצועי, טיפוח קירות וסיליקון</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'פירוק/הרכבת רהיטים', '🪚')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🪚</div>
       <h3>פירוק/הרכבת רהיטים</h3>
       <p>הרכבה ופירוק של כל סוגי הרהיטים</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'תיקון נזילות/סתימות', '🔧')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🔧</div>
       <h3>תיקון נזילות/סתימות</h3>
       <p>פתרון מהיר לנזילות וסתימות שיסריח</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'טפטים לקיר/זכוכית', '🪜')">
+      <div class="service-check">✓</div>
       <div class="service-icon">🪜</div>
       <h3>טפטים לקיר/זכוכית</h3>
       <p>הדבקת טפטים ומדבקות לכל משטח</p>
     </div>
-    <div class="service-card reveal">
+    <div class="service-card reveal" onclick="toggleService(this, 'חיפויים לקירות', '✨')">
+      <div class="service-check">✓</div>
       <div class="service-icon">✨</div>
       <h3>חיפויים לקירות</h3>
       <p>התקנת חיפויים ופאנלים דקורטיביים</p>
@@ -538,9 +693,27 @@
   </div>
 </section>
 
+<!-- FLOATING SEND BUTTON -->
+<button class="float-send" id="floatSend" onclick="sendSelectedServices()">
+  💬 שלח/י הודעה עם השירותים שבחרת (<span id="selectedCount">0</span>)
+</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="serviceModal">
+  <div class="modal">
+    <div class="modal-icon" id="modalIcon"></div>
+    <h3 id="modalTitle"></h3>
+    <p id="modalText"></p>
+    <div class="modal-buttons">
+      <button class="modal-btn-yes" onclick="sendWhatsApp()">כן, שלח/י הודעה 💬</button>
+      <button class="modal-btn-no" onclick="closeModal()">לא תודה</button>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
-  <p>© 2025 <span>יקיר חזן</span> — התקנות לבית ולמשרד · </p>
+  <p>© 2025 <span>יקיר חזן</span> — התקנות לבית ולמשרד</p>
 </footer>
 
 <script>
@@ -555,6 +728,51 @@
     });
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
+
+  // Multi-select services
+  const selectedServices = new Set();
+
+  function toggleService(card, name, icon) {
+    if (selectedServices.has(name)) {
+      selectedServices.delete(name);
+      card.classList.remove('selected');
+    } else {
+      selectedServices.add(name);
+      card.classList.add('selected');
+    }
+    updateFloatBtn();
+  }
+
+  function updateFloatBtn() {
+    const btn = document.getElementById('floatSend');
+    const count = selectedServices.size;
+    document.getElementById('selectedCount').textContent = count;
+    if (count > 0) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }
+
+  function sendSelectedServices() {
+    if (selectedServices.size === 0) return;
+    const list = Array.from(selectedServices).join(', ');
+    const msg = encodeURIComponent('היי יקיר, אני מעוניין/ת בשירותים הבאים: ' + list + ' 🙏');
+    window.open('https://wa.me/972527490871?text=' + msg, '_blank');
+  }
+
+  // Close modal on overlay click
+  const modalEl = document.getElementById('serviceModal');
+  if (modalEl) {
+    modalEl.addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+  }
+
+  function closeModal() {
+    const m = document.getElementById('serviceModal');
+    if (m) m.classList.remove('active');
+  }
 </script>
 </body>
 </html>
